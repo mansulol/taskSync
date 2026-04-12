@@ -6,10 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/api/tasks')]
 final class TaskController extends AbstractController
 {
     //* Get all tasks
-    #[Route('api/tasks', name: 'app_task_list', methods: ['GET'])]
+    #[Route('', name: 'app_task_list', methods: ['GET'])]
     public function list(): JsonResponse
     {
         return $this->json([
@@ -18,7 +19,7 @@ final class TaskController extends AbstractController
     }
 
     //* Create a new task
-    #[Route('api/tasks', name: 'app_task_new', methods: ['POST'])]
+    #[Route('', name: 'app_task_new', methods: ['POST'])]
     public function new(): JsonResponse
     {
         return $this->json([
@@ -27,7 +28,7 @@ final class TaskController extends AbstractController
     }
 
     //* Update a task by id
-    #[Route('api/tasks/{id}/status', name: 'app_task_update', methods: ['PATCH'])]
+    #[Route('/{id}/status', name: 'app_task_update', methods: ['PATCH'])]
     public function update(int $id): JsonResponse
     {
         return $this->json([
@@ -36,7 +37,7 @@ final class TaskController extends AbstractController
     }
 
     //* Delete a task by id
-    #[Route('api/tasks/{id}', name: 'app_task_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'app_task_delete', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
         return $this->json([
