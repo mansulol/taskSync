@@ -2,16 +2,21 @@
 
 namespace App\Controller;
 
+//? App Entities
 use App\Entity\Task;
 use App\Entity\Category;
+
+//? Doctrine
+use Doctrine\ORM\EntityManagerInterface;
+
+//? Symfony Components
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
-
-use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/api/tasks')]
 final class TaskController extends AbstractController
@@ -35,15 +40,25 @@ final class TaskController extends AbstractController
 
     //* Create a new task
     #[Route('', name: 'app_task_new', methods: ['POST'])]
-    public function new(): JsonResponse
+    public function new(Request $request): JsonResponse
     {
+
+        $title = $request->request->get('title');
+        $description = $request->request->get('description');
+        $categoryName = $request->request->get('category', 'General');
+
+        //! Title is required, return error if not provided
+        if (!$title) {
+            return $this->json(['error' => 'Title is required'], Response::HTTP_BAD_REQUEST);
+        }
+
         $category = new Category();
-        $category->setName('Work');
+        $category->setName($categoryName);
         $this->entityManager->persist($category);
 
         $task = new Task();
-        $task->setTitle('New Task');
-        $task->setDescription('This is a new task');
+        $task->setTitle($title);
+        $task->setDescription($description);
         $task->setStatus(false);
         $task->setCategory($category);
 
@@ -61,8 +76,14 @@ final class TaskController extends AbstractController
     public function update(string $id): JsonResponse
     {
         $uuid = Uuid::fromString($id);
-
         $task = $this->entityManager->getRepository(Task::class)->find($uuid);
+
+        if(!$task) {
+            return $this->json([
+                'error' => "Task with id ${id} not found"
+            ], Response::HTTP_NOT_FOUND);
+        }
+
         $task->setStatus( !$task->isStatus() );
 
         $this->entityManager->flush();
@@ -77,8 +98,14 @@ final class TaskController extends AbstractController
     public function delete(string $id): JsonResponse
     {
         $uuid = Uuid::fromString($id);
-
         $task = $this->entityManager->getRepository(Task::class)->find($uuid);
+
+        if(!$task) {
+            return $this->json([
+                'error' => "Task with id ${id} not found"
+            ], Response::HTTP_NOT_FOUND);
+        }
+
         $this->entityManager->remove($task);
 
         $this->entityManager->flush();
@@ -86,5 +113,14 @@ final class TaskController extends AbstractController
         return $this->json([
             'message' => "Task with id ${id} deleted successfully"
         ], Response::HTTP_OK);
+    }
+
+    //* Fallback route for undefined endpoints
+    #[Route('/{slug}', name: 'app_fallback', requirements: ['slug' => '.*'], priority: -1)]
+    public function notFound(): JsonResponse
+    {
+        return $this->json([
+            'error' => 'Endpoint not found'
+        ], Response::HTTP_NOT_FOUND);
     }
 }
