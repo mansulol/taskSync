@@ -12,4 +12,4 @@ COPY . .
 
 RUN chown -R www-data:www-data /var/www/html
 
-RUN composer install
+RUN composer install --no-scripts --no-interaction --optimize-autoloader
