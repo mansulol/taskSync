@@ -31,6 +31,10 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       set({ tasks: data, isLoading: false });
     } catch (error) {
       set({ isError: true, isLoading: false });
+      toast.error(
+        "Error while getting tasks: " +
+          (error instanceof Error ? error.message : "Desconocido"),
+      );
     }
   },
 
@@ -40,7 +44,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       set((state) => ({ tasks: [...state.tasks, newTask] }));
       toast.success("Tarea creada exitosamente");
     } catch (error) {
-      toast.error("Error al crear tarea");
+      toast.error("Error while creating task: " + (error instanceof Error ? error.message : "Desconocido"));
     }
   },
 
@@ -52,7 +56,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       }));
       toast.success(`Tarea marcada como ${updated.status}`);
     } catch (error) {
-      toast.error("Error al actualizar la tarea");
+      toast.error("Error while updating task: " + (error instanceof Error ? error.message : "Desconocido"));
     }
   },
 
@@ -64,7 +68,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       }));
       toast.success("Tarea eliminada");
     } catch (error) {
-      toast.error("Error al eliminar la tarea");
+      toast.error("Error while deleting task: " + (error instanceof Error ? error.message : "Desconocido"));
     }
   },
 }));

@@ -44,16 +44,6 @@ export default function HomePage() {
                     </div>
                 )}
 
-                {isError && (
-                    <div className="flex flex-col items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center">
-                        <AlertCircle className="h-8 w-8 text-destructive" />
-                        <p className="font-medium text-destructive">Error al cargar las tareas</p>
-                        <Button variant="bordered" onClick={getTasks}>
-                            Reintentar
-                        </Button>
-                    </div>
-                )}
-
                 {!isLoading && tasks.length === 0 && (
                     <div className="flex flex-col items-center gap-2 py-16 text-center">
                         <ClipboardList className="h-12 w-12 text-muted-foreground/40" />

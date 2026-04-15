@@ -13,6 +13,7 @@
     "@heroui/react": "^2.8.9",
     "@heroui/theme": "^2.4.26",
     "@tailwindcss/vite": "^4.2.1",
+    "axios": "^1.15.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.35.0",
     "lucide-react": "^0.575.0",
