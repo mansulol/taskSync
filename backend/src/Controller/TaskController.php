@@ -65,9 +65,11 @@ final class TaskController extends AbstractController
         $this->entityManager->persist($task);
         $this->entityManager->flush();
 
-        return new JsonResponse([
+        $newTask = $this->entityManager->getRepository(Task::class)->find($task->getId());
+
+        return $this->json([
             'message' => 'Task created successfully',
-            'task_id' => $task->getId(),
+            'task' => $newTask,
         ], Response::HTTP_CREATED);
     }
 
@@ -89,7 +91,8 @@ final class TaskController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json([
-            'message' => "Task with id ${id} status updated successfully"
+            'message' => "Task with id ${id} status updated successfully",
+            'task' => $task,
         ], Response::HTTP_OK);
     }
 
