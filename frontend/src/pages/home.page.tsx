@@ -9,10 +9,9 @@ export default function HomePage() {
     // Extraemos todo del store de Zustand
     const {
         tasks, isLoading, isError,
-        getTasks, addTask, updateTask, removeTask
+        getTasks, addTask
     } = useTaskStore();
 
-    // Reemplazamos el comportamiento automático de useQuery con un useEffect
     useEffect(() => {
         getTasks();
     }, [getTasks]);
@@ -68,8 +67,6 @@ export default function HomePage() {
                             <TaskCard
                                 key={task.id}
                                 task={task}
-                                onToggle={updateTask}
-                                onDelete={removeTask}
                             />
                         ))}
                     </div>

@@ -3,14 +3,11 @@ export interface TaskProps {
   title: string;
   description: string;
   category: string;
-  status: TaskStatus;
+  status: TASK_STATUS;
   createdAt: string;
 }
 
-export const TASK_STATUS = {
-  pending: "pending",
-  done: "done",
-} as const;
-
-export type TaskStatus = (typeof TASK_STATUS)[keyof typeof TASK_STATUS];
-
+export enum TASK_STATUS {
+  pending,
+  done
+}

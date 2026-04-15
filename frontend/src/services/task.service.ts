@@ -1,15 +1,15 @@
-import type { Task, CreateTaskPayload, TaskStatus } from "@/types/task";
+import { type TaskProps, TASK_STATUS } from "@/types/task";
 
 // Simulated delay to mimic network latency
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-let tasks: Task[] = [
+let tasks: TaskProps[] = [
   {
     id: "1",
     title: "Revisar pull requests",
     description: "Revisar los PRs pendientes del equipo frontend",
     category: "trabajo",
-    status: "pendiente",
+    status: TASK_STATUS.pending,
     createdAt: new Date().toISOString(),
   },
   {
@@ -17,7 +17,7 @@ let tasks: Task[] = [
     title: "Hacer ejercicio",
     description: "30 minutos de cardio",
     category: "salud",
-    status: "completada",
+    status: TASK_STATUS.done,
     createdAt: new Date().toISOString(),
   },
   {
@@ -25,38 +25,35 @@ let tasks: Task[] = [
     title: "Estudiar React Query",
     description: "Leer la documentación sobre mutations",
     category: "estudio",
-    status: "pendiente",
+    status: TASK_STATUS.pending,
     createdAt: new Date().toISOString(),
   },
 ];
 
-let nextId = 4;
-
 // ──── API functions (swap these for real fetch calls) ────
 
-export async function fetchTasks(): Promise<Task[]> {
+export async function fetchTasks(): Promise<TaskProps[]> {
   await delay(600);
   return [...tasks];
 }
 
-export async function createTask(payload: CreateTaskPayload): Promise<Task> {
+export async function createTask(payload: TaskProps): Promise<TaskProps> {
   await delay(400);
-  const newTask: Task = {
-    id: String(nextId++),
+  const newTask: TaskProps = {
     ...payload,
-    status: "pendiente",
+    status: TASK_STATUS.pending,
     createdAt: new Date().toISOString(),
   };
   tasks = [newTask, ...tasks];
   return newTask;
 }
 
-export async function toggleTaskStatus(id: string): Promise<Task> {
+export async function toggleTaskStatus(id: string): Promise<TaskProps> {
   await delay(300);
   const task = tasks.find((t) => t.id === id);
   if (!task) throw new Error("Tarea no encontrada");
-  const newStatus: TaskStatus =
-    task.status === "pendiente" ? "completada" : "pendiente";
+  const newStatus: TASK_STATUS =
+    task.status === TASK_STATUS.pending ? TASK_STATUS.done : TASK_STATUS.pending;
   task.status = newStatus;
   return { ...task };
 }

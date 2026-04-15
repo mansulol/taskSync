@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button, Input } from "@heroui/react";
-import type { TaskProps } from "@/types/task";
+import { TASK_STATUS, type TaskProps } from "@/types/task";
 
 export function TaskForm({ onSubmit }: { onSubmit: (payload: TaskProps) => Promise<void> }) {
     const [title, setTitle] = useState("");
@@ -19,7 +19,7 @@ export function TaskForm({ onSubmit }: { onSubmit: (payload: TaskProps) => Promi
         setError(null);
         setIsSubmitting(true);
         try {
-            await onSubmit({ title: title.trim(), description: description.trim(), category, status: "pending", id: "", createdAt: new Date().toISOString() });
+            await onSubmit({ title: title.trim(), description: description.trim(), category, status: TASK_STATUS.pending, id: "", createdAt: new Date().toISOString() });
             setTitle("");
             setDescription("");
             setCategory("trabajo");
@@ -46,33 +46,40 @@ export function TaskForm({ onSubmit }: { onSubmit: (payload: TaskProps) => Promi
 
             <div className="space-y-2">
                 <textarea
+                className="w-full"
                     placeholder="Descripción (opcional)"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    maxLength={500}
                     rows={2}
                     disabled={isSubmitting}
                 />
             </div>
 
-            <div className="space-y-2">
-                <Input
-                    placeholder="Categoría"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    maxLength={100}
-                    disabled={isSubmitting}
-                />
+
+            <div className="flex gap-3" >
+                <div className="space-y-2 flex-2">
+                    <Input
+                        placeholder="Categoría de la tarea"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        maxLength={100}
+                        disabled={isSubmitting}
+                    />
+                </div>
+                <div className="flex items-end gap-3">
+                    <Button type="submit" variant="bordered" isDisabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                        Crear
+                    </Button>
+                </div>
             </div>
 
-            <div className="flex items-end gap-3">
-                <Button type="submit" variant="bordered" isDisabled={isSubmitting}>
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
-                    Crear
-                </Button>
-            </div>
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && 
+                <p className="text-sm text-destructive text-red-500">
+                    {error}
+                </p>
+                
+                }
         </form>
     );
 }

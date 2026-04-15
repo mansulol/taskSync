@@ -1,12 +1,8 @@
 @import "tailwindcss";
-@import "@heroui/styles";
 
-:root {
-  --primary-color: #4CAF50;
-  --secondary-color: #f44336;
-  --background-color: #f0f0f0;
-  --text-color: #333;
-}
+@config "../tailwind.config.ts";
+
+@source "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 
 html, body, #root {
   height: 100%;
@@ -14,15 +10,7 @@ html, body, #root {
   margin: 0;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
-@layer base {
   :root {
     --background: 40 33% 98%;
     --foreground: 220 20% 12%;
@@ -104,15 +92,4 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-}
 

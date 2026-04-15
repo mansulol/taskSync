@@ -1,24 +1,21 @@
 import { useState } from "react";
 
-import { Check, Undo2, Trash2, Loader2, Badge } from "lucide-react";
-import { Button, Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
+import { Check, Undo2, Trash2, Loader2, Trash } from "lucide-react";
+import { Button, Chip, Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import { TASK_STATUS, type TaskProps } from "@/types/task";
+import { useTaskStore } from "@/store/useTaskStore";
 
 
-interface TaskCardProps {
-    task: TaskProps;
-    onToggle: (id: string) => Promise<void>;
-    onDelete: (id: string) => Promise<void>;
-}
-
-export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
+export function TaskCard({ task }: {task: TaskProps}) {
     const [toggling, setToggling] = useState(false);
     const [deleting, setDeleting] = useState(false);
+
+    const { updateTask, removeTask } = useTaskStore((state) => state)
 
     const handleToggle = async () => {
         setToggling(true);
         try {
-            await onToggle(task.id);
+            await updateTask(task.id);
         } finally {
             setToggling(false);
         }
@@ -27,7 +24,7 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
     const handleDelete = async () => {
         setDeleting(true);
         try {
-            await onDelete(task.id);
+            await removeTask(task.id);
         } finally {
             setDeleting(false);
         }
@@ -65,17 +62,9 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                     >
                         {task.title}
                     </h3>
-                    <Badge
-                    // variant="outline" className={`text-xs ${categoryColors[task.category] || ""}`}
-                    >
+                    <Chip className={ isCompleted ? "bg-gray-300" : "bg-blue-300"} >
                         {task.category}
-                    </Badge>
-                    <Badge
-                        // variant={isCompleted ? "default" : "secondary"}
-                        className={`text-xs ${isCompleted ? "bg-accent text-accent-foreground" : ""}`}
-                    >
-                        {task.status}
-                    </Badge>
+                    </Chip>
                 </div>
                 {task.description && (
                     <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{task.description}</p>
@@ -87,13 +76,23 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                 <Button
                     variant="ghost"
                     size="md"
-                    onClick={handleToggle}
+                    onPress={handleToggle}
                     isDisabled={toggling}
-                    // title={isCompleted ? "Marcar pendiente" : "Marcar completada"}
                     className="h-8 w-8"
                 >
                     {toggling ? <Loader2 className="h-4 w-4 animate-spin" /> : isCompleted ? <Undo2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
                 </Button>
+                
+                {isCompleted && <Button
+                    variant="ghost"
+                    size="md"
+                    onPress={handleDelete}
+                    isDisabled={toggling}
+                    className="h-8 w-8 bg-red-400"
+                    isIconOnly
+                >
+                    <Trash size={18} color="white" />
+                </Button>}
 
                 <Modal>
 

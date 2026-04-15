@@ -1,8 +1,11 @@
 import RoutesConfig from "./routesConfig";
+import { HeroUIProvider } from "@heroui/react";
 
 export default function App() {
 
   return (
-    <RoutesConfig />
+    <HeroUIProvider>
+      <RoutesConfig />
+    </HeroUIProvider>
   )
 }
