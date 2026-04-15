@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button, Input } from "@heroui/react";
+import type { TaskProps } from "@/types/task";
 
-export function TaskForm({ onSubmit }: { onSubmit: (payload: { title: string; description: string; category: string }) => Promise<void> }) {
+export function TaskForm({ onSubmit }: { onSubmit: (payload: TaskProps) => Promise<void> }) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("General");
@@ -18,7 +19,7 @@ export function TaskForm({ onSubmit }: { onSubmit: (payload: { title: string; de
         setError(null);
         setIsSubmitting(true);
         try {
-            await onSubmit({ title: title.trim(), description: description.trim(), category });
+            await onSubmit({ title: title.trim(), description: description.trim(), category, status: "pending", id: "", createdAt: new Date().toISOString() });
             setTitle("");
             setDescription("");
             setCategory("trabajo");
@@ -65,7 +66,7 @@ export function TaskForm({ onSubmit }: { onSubmit: (payload: { title: string; de
             </div>
 
             <div className="flex items-end gap-3">
-                <Button type="submit" variant="primary" isDisabled={isSubmitting}>
+                <Button type="submit" variant="bordered" isDisabled={isSubmitting}>
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
                     Crear
                 </Button>

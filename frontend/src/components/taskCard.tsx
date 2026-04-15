@@ -1,12 +1,12 @@
 import { useState } from "react";
 
 import { Check, Undo2, Trash2, Loader2, Badge } from "lucide-react";
-import { AlertDialog, AlertDialogTrigger, AlertDialogHeader, AlertDialogFooter, Button, AlertDialogContainer } from "@heroui/react";
-import type { Task } from "@/types/common";
+import { Button, Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
+import { TASK_STATUS, type TaskProps } from "@/types/task";
 
 
 interface TaskCardProps {
-    task: Task;
+    task: TaskProps;
     onToggle: (id: string) => Promise<void>;
     onDelete: (id: string) => Promise<void>;
 }
@@ -33,7 +33,7 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
         }
     };
 
-    const isCompleted = task.status === true;
+    const isCompleted = task.status === TASK_STATUS.done;
 
     return (
         <div
@@ -45,8 +45,8 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                 onClick={handleToggle}
                 disabled={toggling}
                 className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${isCompleted
-                        ? "border-accent bg-accent text-accent-foreground"
-                        : "border-muted-foreground/30 hover:border-primary"
+                    ? "border-accent bg-accent text-accent-foreground"
+                    : "border-muted-foreground/30 hover:border-primary"
                     }`}
             >
                 {toggling ? (
@@ -65,10 +65,10 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                     >
                         {task.title}
                     </h3>
-                    <Badge 
-                        // variant="outline" className={`text-xs ${categoryColors[task.category] || ""}`}
-                        >
-                        {task.category.name}
+                    <Badge
+                    // variant="outline" className={`text-xs ${categoryColors[task.category] || ""}`}
+                    >
+                        {task.category}
                     </Badge>
                     <Badge
                         // variant={isCompleted ? "default" : "secondary"}
@@ -95,29 +95,29 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                     {toggling ? <Loader2 className="h-4 w-4 animate-spin" /> : isCompleted ? <Undo2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
                 </Button>
 
-                <AlertDialog>
-                    <AlertDialogTrigger>
-                        <Button variant="ghost" size="md" className="h-8 w-8 text-destructive hover:text-destructive" isDisabled={deleting}>
-                            {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContainer>
-                        <AlertDialogHeader>
+                <Modal>
+
+                    <Button variant="ghost" size="md" className="h-8 w-8 text-destructive hover:text-destructive" isDisabled={deleting}>
+                        {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                    </Button>
+
+                    <ModalContent>
+                        <ModalHeader>
                             <h4>¿Eliminar tarea?</h4>
                             <p>
                                 Esta acción no se puede deshacer. La tarea &quot;{task.title}&quot; será eliminada permanentemente.
                             </p>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <Button variant="outline" onClick={handleDelete}>
+                        </ModalHeader>
+                        <ModalFooter>
+                            <Button variant="bordered" onClick={handleDelete}>
                                 Cancelar
                             </Button>
-                            <Button variant="danger" onClick={handleDelete}>
+                            <Button variant="solid" onClick={handleDelete}>
                                 Eliminar
                             </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContainer>
-                </AlertDialog>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
             </div>
         </div>
     );
