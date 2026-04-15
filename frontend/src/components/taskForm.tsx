@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button, Input } from "@heroui/react";
-import { TASK_STATUS, type TaskProps } from "@/types/task";
+import { type TaskProps } from "@/types/task";
 
 export function TaskForm({ onSubmit }: { onSubmit: (payload: TaskProps) => Promise<void> }) {
     const [title, setTitle] = useState("");
@@ -19,7 +19,7 @@ export function TaskForm({ onSubmit }: { onSubmit: (payload: TaskProps) => Promi
         setError(null);
         setIsSubmitting(true);
         try {
-            await onSubmit({ title: title.trim(), description: description.trim(), category, status: TASK_STATUS.pending, id: "", createdAt: new Date().toISOString() });
+            await onSubmit({ title: title.trim(), description: description.trim(), category: { id: "", name: category }, status: false, id: "", createdAt: new Date().toISOString() });
             setTitle("");
             setDescription("");
             setCategory("trabajo");

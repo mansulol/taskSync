@@ -2,13 +2,12 @@ import { useEffect } from "react";
 import { useTaskStore } from "@/store/useTaskStore";
 import { TaskForm } from "@components/taskForm";
 import { TaskCard } from "@components/taskCard";
-import { AlertCircle, ClipboardList } from "lucide-react";
-import { Button, Skeleton } from "@heroui/react";
+import { ClipboardList } from "lucide-react";
+import { Skeleton } from "@heroui/react";
 
 export default function HomePage() {
-    // Extraemos todo del store de Zustand
     const {
-        tasks, isLoading, isError,
+        tasks, isLoading,
         getTasks, addTask
     } = useTaskStore();
 

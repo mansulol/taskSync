@@ -2,12 +2,12 @@ export interface TaskProps {
   id: string;
   title: string;
   description: string;
-  category: string;
-  status: TASK_STATUS;
+  category: CategoryProps;
+  status: boolean;
   createdAt: string;
 }
 
-export enum TASK_STATUS {
-  pending,
-  done
+export interface CategoryProps {
+  id: string;
+  name: string;
 }

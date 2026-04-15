@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Check, Undo2, Trash2, Loader2, Trash } from "lucide-react";
 import { Button, Chip, Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
-import { TASK_STATUS, type TaskProps } from "@/types/task";
+import { type TaskProps } from "@/types/task";
 import { useTaskStore } from "@/store/useTaskStore";
 
 
@@ -30,7 +30,7 @@ export function TaskCard({ task }: {task: TaskProps}) {
         }
     };
 
-    const isCompleted = task.status === TASK_STATUS.done;
+    const isCompleted = task.status === true;
 
     return (
         <div
@@ -63,7 +63,7 @@ export function TaskCard({ task }: {task: TaskProps}) {
                         {task.title}
                     </h3>
                     <Chip className={ isCompleted ? "bg-gray-300" : "bg-blue-300"} >
-                        {task.category}
+                        {task.category?.name || "Sin categoría"}
                     </Chip>
                 </div>
                 {task.description && (
