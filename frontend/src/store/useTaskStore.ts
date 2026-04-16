@@ -54,7 +54,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       set((state) => ({
         tasks: state.tasks.map((t) => (t.id === id ? updated : t)),
       }));
-      toast.success(`Tarea marcada como ${updated.status}`);
+      toast.success(`Tarea marcada como ${updated.status ? "completada" : "pendiente"}`);
     } catch (error) {
       toast.error("Error while updating task: " + (error instanceof Error ? error.message : "Desconocido"));
     }
