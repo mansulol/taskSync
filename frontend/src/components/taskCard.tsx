@@ -1,24 +1,21 @@
 import { useState } from "react";
 
-import { Check, Undo2, Trash2, Loader2, Badge } from "lucide-react";
-import { AlertDialog, AlertDialogTrigger, AlertDialogHeader, AlertDialogFooter, Button, AlertDialogContainer } from "@heroui/react";
-import type { Task } from "@/types/common";
+import { Check, Undo2, Trash2, Loader2, Trash } from "lucide-react";
+import { Button, Chip, Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
+import { type TaskProps } from "@/types/task";
+import { useTaskStore } from "@/store/useTaskStore";
 
 
-interface TaskCardProps {
-    task: Task;
-    onToggle: (id: string) => Promise<void>;
-    onDelete: (id: string) => Promise<void>;
-}
-
-export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
+export function TaskCard({ task }: {task: TaskProps}) {
     const [toggling, setToggling] = useState(false);
     const [deleting, setDeleting] = useState(false);
+
+    const { updateTask, removeTask } = useTaskStore((state) => state)
 
     const handleToggle = async () => {
         setToggling(true);
         try {
-            await onToggle(task.id);
+            await updateTask(task.id);
         } finally {
             setToggling(false);
         }
@@ -27,7 +24,7 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
     const handleDelete = async () => {
         setDeleting(true);
         try {
-            await onDelete(task.id);
+            await removeTask(task.id);
         } finally {
             setDeleting(false);
         }
@@ -45,8 +42,8 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                 onClick={handleToggle}
                 disabled={toggling}
                 className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${isCompleted
-                        ? "border-accent bg-accent text-accent-foreground"
-                        : "border-muted-foreground/30 hover:border-primary"
+                    ? "border-accent bg-accent text-accent-foreground"
+                    : "border-muted-foreground/30 hover:border-primary"
                     }`}
             >
                 {toggling ? (
@@ -65,17 +62,9 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                     >
                         {task.title}
                     </h3>
-                    <Badge 
-                        // variant="outline" className={`text-xs ${categoryColors[task.category] || ""}`}
-                        >
-                        {task.category.name}
-                    </Badge>
-                    <Badge
-                        // variant={isCompleted ? "default" : "secondary"}
-                        className={`text-xs ${isCompleted ? "bg-accent text-accent-foreground" : ""}`}
-                    >
-                        {task.status}
-                    </Badge>
+                    <Chip className={ isCompleted ? "bg-gray-300" : "bg-blue-300"} >
+                        {task.category?.name || "Sin categoría"}
+                    </Chip>
                 </div>
                 {task.description && (
                     <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{task.description}</p>
@@ -87,37 +76,47 @@ export function TaskCard({ task, onToggle, onDelete }: TaskCardProps) {
                 <Button
                     variant="ghost"
                     size="md"
-                    onClick={handleToggle}
+                    onPress={handleToggle}
                     isDisabled={toggling}
-                    // title={isCompleted ? "Marcar pendiente" : "Marcar completada"}
                     className="h-8 w-8"
                 >
                     {toggling ? <Loader2 className="h-4 w-4 animate-spin" /> : isCompleted ? <Undo2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
                 </Button>
+                
+                {isCompleted && <Button
+                    variant="ghost"
+                    size="md"
+                    onPress={handleDelete}
+                    isDisabled={toggling}
+                    className="h-8 w-8 bg-red-400"
+                    isIconOnly
+                >
+                    <Trash size={18} color="white" />
+                </Button>}
 
-                <AlertDialog>
-                    <AlertDialogTrigger>
-                        <Button variant="ghost" size="md" className="h-8 w-8 text-destructive hover:text-destructive" isDisabled={deleting}>
-                            {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContainer>
-                        <AlertDialogHeader>
+                <Modal>
+
+                    <Button variant="ghost" size="md" className="h-8 w-8 text-destructive hover:text-destructive" isDisabled={deleting}>
+                        {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                    </Button>
+
+                    <ModalContent>
+                        <ModalHeader>
                             <h4>¿Eliminar tarea?</h4>
                             <p>
                                 Esta acción no se puede deshacer. La tarea &quot;{task.title}&quot; será eliminada permanentemente.
                             </p>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <Button variant="outline" onClick={handleDelete}>
+                        </ModalHeader>
+                        <ModalFooter>
+                            <Button variant="bordered" onClick={handleDelete}>
                                 Cancelar
                             </Button>
-                            <Button variant="danger" onClick={handleDelete}>
+                            <Button variant="solid" onClick={handleDelete}>
                                 Eliminar
                             </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContainer>
-                </AlertDialog>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
             </div>
         </div>
     );
