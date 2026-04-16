@@ -1,14 +1,15 @@
 import { useState } from "react";
 
 import { Check, Undo2, Trash2, Loader2, Trash } from "lucide-react";
-import { Button, Chip, Modal, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
+import { Button, Chip, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/react";
 import { type TaskProps } from "@/types/task";
 import { useTaskStore } from "@/store/useTaskStore";
 
 
-export function TaskCard({ task }: {task: TaskProps}) {
+export function TaskCard({ task }: { task: TaskProps }) {
     const [toggling, setToggling] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const { updateTask, removeTask } = useTaskStore((state) => state)
 
@@ -62,7 +63,7 @@ export function TaskCard({ task }: {task: TaskProps}) {
                     >
                         {task.title}
                     </h3>
-                    <Chip className={ isCompleted ? "bg-gray-300" : "bg-blue-300"} >
+                    <Chip className={isCompleted ? "bg-gray-300" : "bg-blue-300"} >
                         {task.category?.name || "Sin categoría"}
                     </Chip>
                 </div>
@@ -82,11 +83,11 @@ export function TaskCard({ task }: {task: TaskProps}) {
                 >
                     {toggling ? <Loader2 className="h-4 w-4 animate-spin" /> : isCompleted ? <Undo2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
                 </Button>
-                
+
                 {isCompleted && <Button
                     variant="ghost"
                     size="md"
-                    onPress={handleDelete}
+                    onPress={onOpen}
                     isDisabled={toggling}
                     className="h-8 w-8 bg-red-400"
                     isIconOnly
@@ -94,27 +95,40 @@ export function TaskCard({ task }: {task: TaskProps}) {
                     <Trash size={18} color="white" />
                 </Button>}
 
-                <Modal>
-
-                    <Button variant="ghost" size="md" className="h-8 w-8 text-destructive hover:text-destructive" isDisabled={deleting}>
-                        {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                    </Button>
-
+                <Modal
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    backdrop="blur"
+                    placement="center"
+                >
                     <ModalContent>
-                        <ModalHeader>
-                            <h4>¿Eliminar tarea?</h4>
-                            <p>
-                                Esta acción no se puede deshacer. La tarea &quot;{task.title}&quot; será eliminada permanentemente.
-                            </p>
-                        </ModalHeader>
-                        <ModalFooter>
-                            <Button variant="bordered" onClick={handleDelete}>
-                                Cancelar
-                            </Button>
-                            <Button variant="solid" onClick={handleDelete}>
-                                Eliminar
-                            </Button>
-                        </ModalFooter>
+                        {(onClose) => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">
+                                    ¿Eliminar tarea?
+                                </ModalHeader>
+                                <ModalBody>
+                                    <p>
+                                        Esta acción no se puede deshacer. La tarea <b>&quot;{task.title}&quot;</b> será eliminada permanentemente.
+                                    </p>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button variant="light" onPress={onClose}>
+                                        Cancelar
+                                    </Button>
+                                    <Button
+                                        color="danger"
+                                        isLoading={deleting}
+                                        onPress={async () => {
+                                            await handleDelete();
+                                            onClose();
+                                        }}
+                                    >
+                                        Eliminar
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
                     </ModalContent>
                 </Modal>
             </div>

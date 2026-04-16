@@ -2,29 +2,25 @@ import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button, Input } from "@heroui/react";
 import { type TaskProps } from "@/types/task";
+import { toast } from "sonner";
 
 export function TaskForm({ onSubmit }: { onSubmit: (payload: TaskProps) => Promise<void> }) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("General");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title.trim()) {
-            setError("El título es obligatorio");
+            toast.error("El título es obligatorio");
             return;
         }
-        setError(null);
         setIsSubmitting(true);
         try {
             await onSubmit({ title: title.trim(), description: description.trim(), category: { id: "", name: category }, status: false, id: "", createdAt: new Date().toISOString() });
-            setTitle("");
-            setDescription("");
-            setCategory("trabajo");
         } catch {
-            setError("Error al crear la tarea. Intenta de nuevo.");
+            toast.error("Error al crear la tarea. Intenta de nuevo.");
         } finally {
             setIsSubmitting(false);
         }
@@ -67,19 +63,12 @@ export function TaskForm({ onSubmit }: { onSubmit: (payload: TaskProps) => Promi
                     />
                 </div>
                 <div className="flex items-end gap-3">
-                    <Button type="submit" variant="bordered" isDisabled={isSubmitting}>
+                    <Button type="submit" variant="solid" color="primary" isDisabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                         Crear
                     </Button>
                 </div>
             </div>
-
-            {error && 
-                <p className="text-sm text-destructive text-red-500">
-                    {error}
-                </p>
-                
-                }
         </form>
     );
 }
